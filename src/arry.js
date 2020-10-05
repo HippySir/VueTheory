@@ -1,3 +1,5 @@
+import {def,observe} from "./Observe";
+
 const arrayProto = Array.prototype
 export const arrayMethods = Object.create(arrayProto);
 
@@ -11,14 +13,21 @@ export const arrayMethods = Object.create(arrayProto);
     'reverse'
 ].forEach(function(method){
     const orignal = arrayProto[method]
-    Object.defineProperty(arrayMethods,method, {
-        value: function mutator (...args) {
-            console.log(method)
-            return orignal.apply(this, args)
-            
-        },
-        enumerable: false,
-        writable: true,
-        configurable: true
+    def(arrayMethods, method, function mutator(...args){
+        const result = orignal.apply(this,args)
+        let ob = this.__ob__
+        let insert 
+        switch (method) {
+            case 'push':
+            case 'unshift':
+                insert = args
+                break;
+            case 'splice':
+                insert = args.slice(2)
+                break
+        }
+        if(insert) observe(insert)//新增
+        ob.dep.notify()
+        return result
     })
 })

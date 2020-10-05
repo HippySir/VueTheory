@@ -10,11 +10,20 @@ export  class Observe {
         this.value = value;
         this.dep = new Dep();
         def(value, '__ob__', this)
+        
         if(!Array.isArray(value)){
             this.walk(value);
         }else{
+            
             const augment = hasProto ? protoAugment : copyAugment
             augment(value, arrayMethods, arrayKeys);
+            this.observeArray(value)
+        }
+    }
+
+    observeArray(items){
+        for(let i = 0, l = items.length; i < l; i++){
+            observe(items[i])
         }
     }
 
@@ -28,7 +37,7 @@ export  class Observe {
 
 
 function defreactive (object, key, value) {
-    debugger
+    
     let childOb = observe(value);
     let dep = new Dep();
     Object.defineProperty(object, key, {
@@ -49,6 +58,7 @@ function defreactive (object, key, value) {
 }
 
 function protoAugment (target, src, keys) {
+    
     target.__proto__ = src;
 }
 
@@ -59,7 +69,7 @@ function copyAugment (target, src, keys) {
     }
 }
 
-function def (obj, key, val, enumerable) {
+export function def (obj, key, val, enumerable) {
     if(typeof obj !== 'object'){
         return
     }
@@ -72,7 +82,7 @@ function def (obj, key, val, enumerable) {
 }
 
 export function observe (value, asRootData) {
-    if(!isObject(value)){
+    if(typeof value !== "object"){
         return
     }
     let ob
