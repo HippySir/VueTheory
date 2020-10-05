@@ -15,6 +15,7 @@ export const arrayMethods = Object.create(arrayProto);
         value: function mutator (...args) {
             console.log(method)
             return orignal.apply(this, args)
+            
         },
         enumerable: false,
         writable: true,
