@@ -1,5 +1,6 @@
 import {Dep} from "./dep";
 import { arrayMethods } from "./arry";
+import  {Watcher} from "./watcher"
 
 //__proto__是否可用
 const hasProto = '__proto__';
@@ -33,6 +34,21 @@ export  class Observe {
             defreactive(obj, keys[i], obj[keys[i]])
         }
     }
+
+    //vue中的$watch API
+    $watch(expOrFn, cb, options){
+        const vm = this
+        options = options || {}
+        const watcher = watcher = new Watcher(vm, expOrFn, cb, options)
+        if(options.imediate){
+            cb.call(this,watcher.value);//以当前的值执行函数
+        }
+        return function unwatchFn(){//返回一个函数 取消对当前的观察
+            watcher.teardown();
+        }
+    }
+
+
 }
 
 
@@ -94,7 +110,7 @@ export function observe (value, asRootData) {
     return ob
 }
 
-function isObject (value) {
+export function isObject (value) {
     return Object.prototype.toString.call(value) === "[object Object]"
 }
 
