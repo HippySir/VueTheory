@@ -75,6 +75,27 @@ export  class Observe {
         return val;
     }
 
+    //删除对象上面的某个属性
+    $del(target, key){
+        if(Array.isArray(target) && isVailArrayIndex(key)){
+            target.splice(key,1);
+            return
+        }
+        const ob = (target).__ob__
+        if(target._isVue || (ob && ob.vmCount)){
+            process.env.NODE_ENV !== 'production' && warn('This is do not allow');
+            return
+        }
+        if(!hasOwn(target,key)){
+            return
+        }
+        delete target[key];
+        if(!ob){
+            return
+        }
+        ob.dep.notify()
+    }
+
 
 }
 
