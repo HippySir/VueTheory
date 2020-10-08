@@ -39,13 +39,40 @@ export  class Observe {
     $watch(expOrFn, cb, options){
         const vm = this
         options = options || {}
-        const watcher = watcher = new Watcher(vm, expOrFn, cb, options)
+        const watcher = new Watcher(vm, expOrFn, cb, options)
         if(options.imediate){
             cb.call(this,watcher.value);//以当前的值执行函数
         }
         return function unwatchFn(){//返回一个函数 取消对当前的观察
             watcher.teardown();
         }
+    }
+
+    //给队形设置动态属性
+    $set(target, key,  value) {
+        //首先对是数组的情况进行处理
+        if(Array.isArray(target) && isVailArrayIndex(key)){
+            target.length = Math.max(target.length, key + 1)
+            target.splice(key, 1, value);
+            return value;
+        }
+        //如果需要处理的key已经存在target中
+        if(key in target && !(key in Object.prototype)){
+            target[key] = value;
+        }
+        //新增
+        const ob = target.__ob__
+        if(target._isVue || (ob && ob.vmCount)){
+            process.env.NODE_ENV !== 'production' && warn("This is do not allow");
+            return val
+        }
+        if(!ob){//如果传入的对象不是相应式的数据  那么对于传入的对象不需要额外的处理
+            target[key] = val;
+            return val;
+        }
+        defreactive(ob.value, key, val)
+        ob.dep.notify();
+        return val;
     }
 
 
@@ -71,6 +98,15 @@ function defreactive (object, key, value) {
             dep.notify();
         }
     })
+}
+
+//判断所传入的的值在数组中是否为一个有效的索引
+function isVailArrayIndex(key){
+    if(Math.floor(key) === key){
+        return true
+    }else{
+        return false
+    }
 }
 
 function protoAugment (target, src, keys) {
@@ -117,3 +153,4 @@ export function isObject (value) {
 function hasOwn (obj, key) {
     return obj.hasOwnProperty(key)
 }
+

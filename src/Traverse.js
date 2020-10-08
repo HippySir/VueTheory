@@ -1,4 +1,4 @@
-import {Set} from './Set'
+
 import {isObject} from './Observe'
 
 const seenObjects = new Set();
