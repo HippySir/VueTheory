@@ -11,9 +11,20 @@ export function parseHTML (html, options) {
       if(textEnd >= 0){
         //
       }
+
+      if(textEnd < 0){
+        // 纯文本
+        text = html;
+        html = ''
+      }
+
+      if(options.chars && text){
+        options.chars(text)
+      }
+
     }else{
       //父元素为script style textarea 的处理逻辑
-
+       
     }
   }
 }

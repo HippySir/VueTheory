@@ -119,6 +119,16 @@ while(html){
             rest = html.slice(textEnd)
         }
         text = html.substring(0,textEnd)
+        html = html.substring(textEnd)
+    }
+
+    if(textEnd < 0){
+        text = html
+        html = ''
+    }
+
+    if(options.chars && text){
+        options.chars(text)
     }
 
 }
